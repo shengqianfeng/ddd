@@ -16,6 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 请假聚合内的领域服务类(一个聚合可以设计一个领域服务类，管理聚合内所有的领域服务)
+ * when：如果一个业务行为由多个实体对象参与完成，我们就将这部分业务逻辑放在领域服务中实现。
+ * what: 领域服务与实体方法的区别是：
+ *              实体方法: 完成单一实体自身的业务逻辑，是相对简单的原子业务逻辑
+ *              领域服务:  则是多个实体组合出的相对复杂的业务逻辑。
+ *              两者都在领域层，实现领域模型的核心业务能力。
+ * Tips:
+ * ♻️ 在领域服务或实体方法中，我们应尽量避免调用其它聚合的领域服务或引用其它聚合的实体或值对象，这种操作会增加聚合的耦合度
+ *
+ *
+ */
 @Service
 @Slf4j
 public class LeaveDomainService {
@@ -27,6 +39,13 @@ public class LeaveDomainService {
     @Autowired
     LeaveFactory leaveFactory;
 
+    /**
+     *
+     * 创建聚合根Leave，当聚合根被创建时，聚合内的所有依赖对象将会被同时创建
+     * @param leave
+     * @param leaderMaxLevel
+     * @param approver
+     */
     @Transactional
     public void createLeave(Leave leave, int leaderMaxLevel, Approver approver) {
         leave.setLeaderMaxLevel(leaderMaxLevel);
@@ -47,6 +66,11 @@ public class LeaveDomainService {
         leaveRepositoryInterface.save(leaveFactory.createLeavePO(leave));
     }
 
+    /**
+     * 领域事件的执行逻辑
+     * @param leave
+     * @param approver
+     */
     @Transactional
     public void submitApproval(Leave leave, Approver approver) {
         LeaveEvent event;
@@ -66,8 +90,11 @@ public class LeaveDomainService {
             }
         }
         leave.addHistoryApprovalInfo(leave.getCurrentApprovalInfo());
+        //1、完成业务数据持久化
+        //2、完成事件数据持久化
         leaveRepositoryInterface.save(leaveFactory.createLeavePO(leave));
         leaveRepositoryInterface.saveEvent(leaveFactory.createLeaveEventPO(event));
+        //3、完成领域事件发布
         eventPublisher.publish(event);
     }
 

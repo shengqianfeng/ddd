@@ -24,14 +24,21 @@ public class LeaveApplicationService{
     ApprovalRuleDomainService approvalRuleDomainService;
 
     /**
-     * 创建一个请假申请并为审批人生成任务
+     * what：跨领域的应用服务，完成领域服务的组合和编排
+     *
+     * how：由于领域核心逻辑已经很好地沉淀到了领域层中，领域层的这些核心逻辑可以高度复用。
+     * 应用服务只需要灵活地组合和编排这些不同聚合的领域服务，就可以很容易地适配前端业务的变化。
+     * 因此应用层不会积累太多的业务逻辑代码，所以会变得很薄，代码维护起来也会容易得多。
+     *
+     * when：创建一个请假申请并为审批人生成任务
      * @param leave
      */
     public void createLeaveInfo(Leave leave){
-        //get approval leader max level by rule
+        //get approval leader max level by rule  审批规则领域服务：获取请假审批规则
         int leaderMaxLevel = approvalRuleDomainService.getLeaderMaxLevel(leave.getApplicant().getPersonType(), leave.getType().toString(), leave.getDuration());
-        //find next approver
+        //find next approver  人员领域服务：根据请假审批规则获取请假审批人
         Person approver = personDomainService.findFirstApprover(leave.getApplicant().getPersonId(), leaderMaxLevel);
+        //创建请假单领域服务
         leaveDomainService.createLeave(leave, leaderMaxLevel, Approver.fromPerson(approver));
     }
 

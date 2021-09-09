@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 请假申请人值对象(数据来源于person聚合)
+ */
 @Data
 @Builder
 @AllArgsConstructor

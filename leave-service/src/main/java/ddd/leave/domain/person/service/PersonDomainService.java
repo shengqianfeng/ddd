@@ -48,9 +48,10 @@ public class PersonDomainService {
     }
 
     /**
+     *  根据请假审批规则获取请假审批人
      * find leader with applicant, if leader level bigger then leaderMaxLevel return null, else return Approver from leader;
      *
-     * @param applicantId
+     * @param applicantId 请假申请人ID
      * @param leaderMaxLevel
      * @return
      */
@@ -66,7 +67,7 @@ public class PersonDomainService {
     /**
      * find leader with current approver, if leader level bigger then leaderMaxLevel return null, else return Approver from leader;
      *
-     * @param currentApproverId
+     * @param currentApproverId 通过传递ID就可以做到Person聚合不依赖leave聚合中Approver实体方法，方便后期Person聚合、Leave聚合被拆分为微服务。
      * @param leaderMaxLevel
      * @return
      */

@@ -15,9 +15,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * 用工厂模式实现复杂聚合的实体数据初始化，封装复杂对象的创建过程。
+ * 工厂、仓储模式往往结对出现，应用于数据的初始化、持久化两类场景。
+ */
 @Service
 public class LeaveFactory {
-
+    //创建持久化Leave对象
     public LeavePO createLeavePO(Leave leave) {
         LeavePO leavePO = new LeavePO();
         leavePO.setId(UUID.randomUUID().toString());
@@ -32,6 +36,11 @@ public class LeaveFactory {
         return leavePO;
     }
 
+    /**
+     * DO对象的初始化
+     * @param leavePO 持久化数据对象
+     * @return
+     */
     public Leave getLeave(LeavePO leavePO) {
         Leave leave = new Leave();
         Applicant applicant = Applicant.builder()
@@ -60,6 +69,11 @@ public class LeaveFactory {
         return eventPO;
     }
 
+    /**
+     * DO对象持久化
+     * @param leave
+     * @return
+     */
     private List<ApprovalInfoPO> approvalInfoPOListFromDO(Leave leave) {
         return leave.getHistoryApprovalInfos()
                 .stream()

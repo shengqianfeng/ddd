@@ -10,6 +10,10 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.*;
 
+/**
+ * 以多属性嵌入的方式组装和持久化对象，这样可以减少数据库表数量和表之间的复杂依赖关系。
+ * 比如引入的applicantId、applicantName、applicantType，而不是Applicant值对象
+ */
 @Entity
 @Table(name = "Leave")
 @Data
